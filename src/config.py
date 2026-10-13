@@ -1,9 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class Config(BaseModel):
     """
     Configuration for RAG pipeline
+
+    model_config dictates the behavior of class:
+        validate_assignment: validates values given after creation
+        extra="fordid": validates typing (typos, etc...)
 
     attributes:
         raw_path (str): path to the raw repo to be processed
@@ -16,6 +20,7 @@ class Config(BaseModel):
 
         max_chunk_size (int): maximun char length for a chunk
     """
+    model_config = ConfigDict(validate_assignment=True, extra="forbid")
 
     raw_path: str = Field(default="data/raw/vllm-0.10.1")
     datasets_path: str = Field(default="data/datasets")
@@ -26,4 +31,5 @@ class Config(BaseModel):
     output_answer_path: str = Field(
         default="data/output/search_results_and_answer")
 
-    max_chunk_size: int = Field(default=2000, ge=200, le=2000)
+    max_chunk_size: int = Field(default=2000, ge=100, le=2000)
+    llm: str = Field(default="Qwen/Qwen3-0.6B")

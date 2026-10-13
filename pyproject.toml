@@ -1,0 +1,40 @@
+[project]
+name = "RAG"
+version = "0.1.0"
+description = "RAG - retrieval augmented generation"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic",
+    "bm25s",
+    "fire",
+    "transformers",
+    "torch",
+    "tqdm",
+    "flake8",
+    "mypy"
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+torch = {index = "pytorch-cpu"}
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+exclude = ["data/", ".venv/", "moulinette"]
+
+[[tool.mypy.overrides]]
+module = ["fire.*", "bm25s", "bm25s.*",
+    "transformers", "transformers.*",
+    "torch", "torch.*", "tqdm"]
+ignore_missing_imports = true
+follow_imports = "skip"
+
+[tool.flake8]
+exclude = ["data/", ".venv/", "moulinette/"]
