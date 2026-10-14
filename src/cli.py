@@ -14,19 +14,19 @@ class Cli:
             )
         self.pipeline = Pipeline(config=self.config)
 
-    def index(self, max_chunk_size: int = 2000):
+    def index(self, max_chunk_size: int = 2000) -> None:
         """Ingest data/raw/ and build the index under data/processed/."""
         self.config.max_chunk_size = max_chunk_size
         print("index")
         ...
 
-    def search(self, query: str, k: int):
+    def search(self, query: str, k: int) -> None:
         """Return the top-k sources for a single query."""
         print("search")
         ...
 
     def search_dataset(self, dataset_path: str, k: int,
-                       save_directory: str):
+                       save_directory: str) -> None:
         """
         Run search over a whole dataset
         and write a StudentSearchResults JSON file.
@@ -34,13 +34,13 @@ class Cli:
         print("search_dataset")
         ...
 
-    def answer(self, query: str, k: int):
+    def answer(self, query: str, k: int) -> None:
         """Answer a single query using the retrieved context."""
         print("answer")
         ...
 
     def answer_dataset(self, student_search_results_path: str,
-                       save_directory: str):
+                       save_directory: str) -> None:
         """
         Generate answers for a dataset,
         producing a StudentSearchResultsAndAnswer
@@ -49,7 +49,8 @@ class Cli:
         print("answer_dataset")
         ...
 
-    def evaluate(student_search_results_path: str, dataset_path: str):
+    def evaluate(student_search_results_path: str,
+                 dataset_path: str) -> None:
         """
         Report your own recall@k against a ground-truth dataset,
         for your own testing.

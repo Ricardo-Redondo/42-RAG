@@ -12,7 +12,7 @@ class Indexer:
     indexer: BM25
     stemmer: Stemmer
 
-    def index(self, strats: dict[Path, Chunking]):
+    def index(self, strats: dict[Path, Chunking]) -> None:
         chunks: list[Chunk] = []
         for path, strat in strats.items():
             chunks += strat.proccess(path, self.config.max_chunk_size)

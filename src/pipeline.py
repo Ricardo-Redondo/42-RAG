@@ -6,11 +6,11 @@ from Stemmer import Stemmer
 
 
 class Pipeline:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.config: Config = config
         self.indexer: Indexer = Indexer(config, BM25(), Stemmer("en"))
 
-    def index(self):
+    def index(self) -> None:
         extentions = [".txt", ".py", ".md"]
         self.strats: dict[Path, Chunking] = {}
 
@@ -19,8 +19,8 @@ class Pipeline:
                 self.strats[path] = PyChunking if path.suffix == ".py" else MdChunking
         self.indexer.index(self.strats)
 
-    def search(self, query: str, k: int):
+    def search(self, query: str, k: int) -> None:
         ...
 
-    def answer(self, query: str, k: int):
+    def answer(self, query: str, k: int) -> None:
         ...
