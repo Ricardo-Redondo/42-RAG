@@ -1,3 +1,9 @@
-from .chunking import Chunking
+from .chunking import Chunking, PyChunking, MdChunking
+from .indexing import Indexer
 
-__all__ = ["Chunking"]
+__all__ = [
+    "Chunking",
+    "PyChunking",
+    "MdChunking",
+    "Indexer"
+    ]

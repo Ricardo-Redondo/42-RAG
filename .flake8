@@ -1,3 +1,6 @@
-.venv/
-data/raw/
-moulinette/
+[flake8]
+exclude = [
+    .venv/
+    data/raw/
+    moulinette/
+]

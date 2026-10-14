@@ -1,20 +1,23 @@
-from dataclasses import dataclass
-from src.indexing import Chunking
+from src.indexing import Chunking, PyChunking, MdChunking, Indexer 
 from src.config import Config
 from pathlib import Path
+from bm25s import BM25
+from Stemmer import Stemmer
 
 
-@dataclass()
 class Pipeline:
-    config: Config
-
-    def __post_init__(self) -> None:
-        self.strats: dict[Path, Chunking] = Chunking.select_strat(
-            Path(self.config.raw_path)
-            )
+    def __init__(self, config: Config):
+        self.config: Config = config
+        self.indexer: Indexer = Indexer(config, BM25(), Stemmer("en"))
 
     def index(self):
-        ...
+        extentions = [".txt", ".py", ".md"]
+        self.strats: dict[Path, Chunking] = {}
+
+        for path in Path(self.config.raw_path).rglob("*"):
+            if path.is_file() and path.suffix in extentions:
+                self.strats[path] = PyChunking if path.suffix == ".py" else MdChunking
+        self.indexer.index(self.strats)
 
     def search(self, query: str, k: int):
         ...

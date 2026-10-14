@@ -11,7 +11,10 @@ dependencies = [
     "torch",
     "tqdm",
     "flake8",
-    "mypy"
+    "mypy",
+    "fastapi",
+    "uvicorn",
+    "PyStemmer"
 ]
 
 [tool.uv]
@@ -32,7 +35,7 @@ exclude = ["data/", ".venv/", "moulinette"]
 [[tool.mypy.overrides]]
 module = ["fire.*", "bm25s", "bm25s.*",
     "transformers", "transformers.*",
-    "torch", "torch.*", "tqdm"]
+    "torch", "torch.*", "tqdm", "PyStemmer"]
 ignore_missing_imports = true
 follow_imports = "skip"
 

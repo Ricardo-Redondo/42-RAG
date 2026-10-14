@@ -31,8 +31,6 @@ class Cli:
         Run search over a whole dataset
         and write a StudentSearchResults JSON file.
         """
-        self.config.datasets_path = dataset_path
-        self.config.output_search_path = save_directory
         print("search_dataset")
         ...
 
@@ -48,8 +46,6 @@ class Cli:
         producing a StudentSearchResultsAndAnswer
         JSON file.
         """
-        self.config.output_answer_path = save_directory
-        self.config.output_search_path = student_search_results_path
         print("answer_dataset")
         ...
 
