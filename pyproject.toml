@@ -35,7 +35,7 @@ exclude = ["data/", ".venv/", "moulinette"]
 [[tool.mypy.overrides]]
 module = ["fire.*", "bm25s", "bm25s.*",
     "transformers", "transformers.*",
-    "torch", "torch.*", "tqdm", "PyStemmer"]
+    "torch", "torch.*", "tqdm", "Stemmer"]
 ignore_missing_imports = true
 follow_imports = "skip"
 
