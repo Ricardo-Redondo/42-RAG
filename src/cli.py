@@ -1,4 +1,5 @@
 from pathlib import Path
+from src.models import UnansweredQuestion
 from src.pipeline import Pipeline
 from src.config import Config
 
@@ -17,13 +18,14 @@ class Cli:
     def index(self, max_chunk_size: int = 2000) -> None:
         """Ingest data/raw/ and build the index under data/processed/."""
         self.config.max_chunk_size = max_chunk_size
-        print("index")
-        ...
+        self.pipeline.index()
 
     def search(self, query: str, k: int) -> None:
         """Return the top-k sources for a single query."""
-        print("search")
-        ...
+        result = self.pipeline.search(UnansweredQuestion(question=query), k)
+        for source in result.search_results[0].retrieved_sources:
+            print(f"{source.file_path} [{source.first_character_index}/"
+                  f"{source.last_character_index}]")
 
     def search_dataset(self, dataset_path: str, k: int,
                        save_directory: str) -> None:
@@ -31,8 +33,7 @@ class Cli:
         Run search over a whole dataset
         and write a StudentSearchResults JSON file.
         """
-        print("search_dataset")
-        ...
+        self.pipeline.search_dataset(dataset_path, k, save_directory)
 
     def answer(self, query: str, k: int) -> None:
         """Answer a single query using the retrieved context."""
