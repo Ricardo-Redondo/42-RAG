@@ -23,7 +23,7 @@ class Indexer:
             stemmer=self.stemmer
             )
 
-        self.indexer.index()
+        self.indexer.index(tokens)
         self.indexer.save(
             self.config.bm25_index_path,
             corpus=[chunk.model_dump() for chunk in chunks]

@@ -11,32 +11,45 @@ class Chunk(BaseModel):
 
 
 class Chunking(ABC):
+    @staticmethod
     @abstractmethod
-    def proccess(self, path: Path, chunking_size: int) -> list[Chunk]:
+    def proccess(path: Path, chunking_size: int) -> list[Chunk]:
         ...
 
 
 class PyChunking(Chunking):
-    def proccess(self, path: Path, chunking_size: int) -> list[Chunk]:
+    @staticmethod
+    def proccess(path: Path, chunking_size: int) -> list[Chunk]:
         with open(path, newline="", encoding="utf-8") as f:
             content = f.read()
         chunks: list[Chunk] = []
-        for i in range(chunking_size, len(content)):
+        for start in range(0, len(content), chunking_size):
+            end = min(start + chunking_size, len(content))
             chunks.append(Chunk(
-                content[i - chunking_size:i],
-                MinimalSource(path.as_posix(), i - chunking_size, i)
+                chunk=content[start:end],
+                source=MinimalSource(
+                    file_path=path.as_posix(),
+                    first_character_index=start,
+                    last_character_index=end
+                    )
             ))
         return chunks
 
 
 class MdChunking(Chunking):
-    def proccess(self, path: Path, chunking_size: int) -> list[Chunk]:
+    @staticmethod
+    def proccess(path: Path, chunking_size: int) -> list[Chunk]:
         with open(path, newline="", encoding="utf-8") as f:
             content = f.read()
         chunks: list[Chunk] = []
-        for i in range(chunking_size, len(content)):
+        for start in range(0, len(content), chunking_size):
+            end = min(start + chunking_size, len(content))
             chunks.append(Chunk(
-                content[i - chunking_size:i],
-                MinimalSource(path.as_posix(), i - chunking_size, i)
+                chunk=content[start:end],
+                source=MinimalSource(
+                    file_path=path.as_posix(),
+                    first_character_index=start,
+                    last_character_index=end
+                    )
             ))
         return chunks
