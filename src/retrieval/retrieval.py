@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from src.config import Config
 from src.models import MinimalSearchResults, RagDataset, StudentSearchResults
 from bm25s import BM25, tokenize
@@ -9,7 +9,7 @@ from Stemmer import Stemmer
 class Retriever:
     config: Config
     stemmer: Stemmer
-    retriever: BM25 | None = None
+    retriever: BM25 | None = field(default=None, init=False)
 
     def retrieve(
             self,
