@@ -78,7 +78,7 @@ if top_k <= 0 or not questions:
     return ... every question with retrieved_sources=[] ...
 ```
 
-- `bm25.scores["num_docs"]` is the number of chunks in the index (11015).
+- `bm25.scores["num_docs"]` is the number of chunks in the index (14547).
 - **`k` larger than the number of chunks** → bm25s raises `ValueError`
   (tested), so `k` is capped.
 - **`k = 0`** → no search at all, every question gets an empty list (that's
@@ -91,11 +91,19 @@ if top_k <= 0 or not questions:
 
 ```python
 many = len(questions) > 1
-querys_tokens = tokenize([q.question for q in questions], stopwords="en",
-                         stemmer=self.stemmer, show_progress=many)
+querys_tokens = tokenize([expand_identifiers(q.question) for q in questions],
+                         stopwords="en", stemmer=self.stemmer,
+                         show_progress=many)
 ```
 
 Same function as in indexing, and it **must use the same settings**:
+
+- **`expand_identifiers`** (from `src/text.py`, see `indexing/README.md`):
+  the chunks were indexed with their snake_case/CamelCase names split
+  (`max_model_len` → `max model len`), so the question goes through the same
+  function — a question quoting `max_model_len` also matches chunks that only
+  say "max model". Both sides import the **one** function, so they can never
+  drift apart.
 
 - **Stemmer: required.** The index stores stemmed words (`loaded` → `load`).
   An unstemmed question looks up `loaded`, which doesn't exist → no match.

@@ -10,14 +10,15 @@ the same metric.
 uv run python -m src evaluate \
     --student_search_results_path data/output/search_results/UnansweredQuestions/dataset_docs_public.json \
     --dataset_path data/datasets/public/AnsweredQuestions/dataset_docs_public.json
-# Recall@1: 0.560  Recall@3: 0.770  Recall@5: 0.850  Recall@10: 0.870
+# Recall@1: 0.630  Recall@3: 0.810  Recall@5: 0.830  Recall@10: 0.880
 ```
 
 (`make eval`, `make eval_all`.)
 
-**It gives exactly the moulinette's numbers** — checked on both public
-datasets (docs 0.560 / 0.770 / 0.850 / 0.870, code 0.354 / 0.535 / 0.596 /
-0.667).
+**It gives exactly the moulinette's numbers** — checked on the public datasets
+(first chunker: docs 0.560 / 0.770 / 0.850 / 0.870, code 0.354 / 0.535 /
+0.596 / 0.667) and on the private ones with the current index (recall@5:
+docs 0.820, code 0.750).
 
 ---
 

@@ -46,6 +46,7 @@ as a hit if it is in the exact same file and overlaps the real answer's range.
 | `config.py` | `Config` pydantic model: all settings (paths, chunk size, model, prompt budget) in one validated object. |
 | `models.py` | The pydantic models from the subject (`MinimalSource`, `StudentSearchResults`, ...). |
 | `errors.py` | `RAGError`: an *expected* error (bad input, missing index...) whose message is meant for the user. |
+| `text.py` | `expand_identifiers`: splits `max_model_len` / `CamelCase` names for BM25. Used by **both** indexing and retrieval. |
 | `indexing/` | Chunking + building/saving the BM25 index. |
 | `retrieval/` | Loading the index + searching it. |
 | `generation/` | Turning a question + its sources into an answer with Qwen. |
@@ -268,25 +269,35 @@ relative to the project root, with `/` separators.
 | `make search_all` / `eval_all` / `moulinette_all` | docs + code |
 | `make check` | index → search_all → eval_all (the exam's retrieval run) |
 | `make edge_cases` | the exam's 4 edge cases |
+| `make clean` / `fclean` / `vclean` | caches / + index and outputs / + the venv |
 
 Example: `make check SCOPE=private K=10`. The exam always uses **k = 10**
 and grades **recall@5**.
 
 ---
 
-## 8. Current results (baseline: fixed 2000-char chunks, default BM25)
+## 8. Current results
+
+LangChain chunks (Python / Markdown splitters, 2000 chars) + identifier
+splitting + file path words, BM25 (k1=1.5, b=0.75) with English stopwords and
+stemming:
 
 | Exam check | Result | Limit |
 |---|---|---|
-| indexing | ~4 s | 300 s |
-| 200 searches | ~1 s | 90 s |
-| docs recall@5 (public / private) | 85.0% / 83.0% | 80% |
-| code recall@5 (public / private) | 59.6% / 52.0% | 50% |
+| indexing | ~4.5 s | 300 s |
+| 200 searches | ~0.7 s | 90 s |
+| docs recall@5 (public / private) | 83.0% / 82.0% | 80% |
+| code recall@5 (public / private) | 82.8% / 75.0% | 50% |
+| edge cases | 4 / 4, no traceback | all |
 | one answer (CPU) | ~13 s + ~6 s model loading | — |
+
+The private scores are confirmed by the moulinette. How we got there (each
+change measured): `indexing/README.md` section "Choosing a chunker".
 
 ## To Do
 
-- Real chunking strategies (Python by `ast` functions/classes, Markdown by
-  headings) — code recall is close to the 50% line
+- Docs is the closest to its line (82% vs 80%): overlapping windows were the
+  only thing that raised docs (87% public) — worth re-testing with the new
+  tokenization
 - HTTP server (bonus)
-- The root `README.md` required by the subject
+- Fill in the login on the first line of the root `README.md`
