@@ -59,7 +59,7 @@ class Cli:
         answer = result.search_results[0]
         print(answer.answer)
         if answer.retrieved_sources:
-            print("\nSources:")
+            print("\nRetrieved sources:")
         for source in answer.retrieved_sources:
             print(f"  {source.file_path} [{source.first_character_index}/"
                   f"{source.last_character_index}]")
