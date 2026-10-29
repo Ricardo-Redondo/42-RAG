@@ -28,7 +28,7 @@ RESULTS = $(SEARCH_OUT)/$(DATASET)
 MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports \
 	--disallow-untyped-defs --check-untyped-defs
 
-.PHONY: install run debug clean destroy lint lint-strict \
+.PHONY: install run debug clean fclean vclean lint lint-strict \
 	index search search_dataset answer answer_dataset evaluate eval \
 	moulinette search_all eval_all moulinette_all check edge_cases
 
@@ -49,6 +49,13 @@ clean:
 	find . -name __pycache__ -not -path "./.venv/*" -prune -exec rm -rf {} +
 	rm -rf .mypy_cache
 
+fclean: clean
+	rm -rf data/output
+	rm -rf data/processed
+
+vclean: clean
+	rm -rf .venv
+
 lint:
 	uv run flake8 .
 	uv run mypy . $(MYPY_FLAGS)
@@ -56,9 +63,6 @@ lint:
 lint-strict:
 	uv run flake8 .
 	uv run mypy . --strict
-
-destroy: clean
-	rm -rf .venv
 
 index:
 	$(RUN) index --max_chunk_size $(CHUNK)

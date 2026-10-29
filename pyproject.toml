@@ -14,7 +14,8 @@ dependencies = [
     "mypy",
     "fastapi",
     "uvicorn",
-    "PyStemmer"
+    "PyStemmer",
+    "langchain-text-splitters"
 ]
 
 [tool.uv]
@@ -35,7 +36,8 @@ exclude = ["data/", ".venv/", "moulinette"]
 [[tool.mypy.overrides]]
 module = ["fire.*", "bm25s", "bm25s.*",
     "transformers", "transformers.*",
-    "torch", "torch.*", "tqdm", "Stemmer"]
+    "torch", "torch.*", "tqdm", "Stemmer",
+    "langchain-text-splitters"]
 ignore_missing_imports = true
 follow_imports = "skip"
 
