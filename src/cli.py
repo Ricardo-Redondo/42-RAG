@@ -53,20 +53,28 @@ class Cli:
         self.pipeline.search_dataset(dataset_path, check_k(k),
                                      save_directory)
 
-    def answer(self, query: str, k: int) -> None:
+    def answer(self, query: str, k: int = 10) -> None:
         """Answer a single query using the retrieved context."""
-        print("answer")
-        ...
+        result = self.pipeline.answer(make_question(query), check_k(k))
+        answer = result.search_results[0]
+        print(answer.answer)
+        if answer.retrieved_sources:
+            print("\nSources:")
+        for source in answer.retrieved_sources:
+            print(f"  {source.file_path} [{source.first_character_index}/"
+                  f"{source.last_character_index}]")
 
     def answer_dataset(self, student_search_results_path: str,
-                       save_directory: str) -> None:
+                       save_directory: str = (
+                           "data/output/search_results_and_answer")
+                       ) -> None:
         """
         Generate answers for a dataset,
         producing a StudentSearchResultsAndAnswer
         JSON file.
         """
-        print("answer_dataset")
-        ...
+        self.pipeline.answer_dataset(student_search_results_path,
+                                     save_directory)
 
     def evaluate(student_search_results_path: str,
                  dataset_path: str) -> None:
