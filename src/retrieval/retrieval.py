@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from src.config import Config
 from src.errors import RAGError
+from src.text import expand_identifiers
 from src.models import MinimalSearchResults, RagDataset, StudentSearchResults
 from bm25s import BM25, tokenize
 from Stemmer import Stemmer
@@ -49,7 +50,7 @@ class Retriever:
 
         many = len(questions) > 1
         querys_tokens = tokenize(
-            [q.question for q in questions],
+            [expand_identifiers(q.question) for q in questions],
             stopwords="en",
             stemmer=self.stemmer,
             show_progress=many

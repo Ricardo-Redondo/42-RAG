@@ -2,6 +2,7 @@ from pathlib import Path
 from .chunking import Chunking, Chunk
 from src.config import Config
 from src.errors import RAGError
+from src.text import expand_identifiers
 from dataclasses import dataclass
 from bm25s import BM25, tokenize
 from Stemmer import Stemmer
@@ -31,8 +32,11 @@ class Indexer:
             raise RAGError(
                 f"nothing to index in '{self.config.raw_path}'")
 
+        # the file path's words count too (vllm/lora/... -> vllm, lora);
+        # only the BM25 tokens change: the chunk text and offsets don't
         tokens = tokenize(
-            [chunk.chunk for chunk in chunks],
+            [expand_identifiers(chunk.source.file_path + " " + chunk.chunk)
+             for chunk in chunks],
             stopwords="en",
             stemmer=self.stemmer
             )
