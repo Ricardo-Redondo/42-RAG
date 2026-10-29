@@ -7,28 +7,34 @@ class Config(BaseModel):
 
     model_config dictates the behavior of class:
         validate_assignment: validates values given after creation
-        extra="fordid": validates typing (typos, etc...)
+        extra="forbid": unknown field names raise an error (typos, etc...)
 
     attributes:
         raw_path (str): path to the raw repo to be processed
-        datasets_path (str): path to the test datasets
-        processed_path (str): path to the processed data
-        chunks_output_path (str): path to the processed chunks
-        retrieval_index_path (str): path to the bm25 index
-        output_search_path (str): path to the outputed search results
-        output_answer_path (str): path to the outputed generated answers
+        processed_path (str): folder where the index is saved
 
         max_chunk_size (int): maximun char length for a chunk
+
+        llm (str): Hugging Face name of the model used for answers
+        max_new_tokens (int): maximum length of one answer, in tokens
+        max_context_sources (int): maximum number of retrieved sources
+            given to the model
+        max_context_tokens (int): token budget for the sources in the
+            prompt (sources are cut to fit)
     """
     model_config = ConfigDict(validate_assignment=True, extra="forbid")
 
     raw_path: str = Field(default="data/raw/vllm-0.10.1")
-    datasets_path: str = Field(default="data/datasets")
     processed_path: str = Field(default="data/processed")
-    bm25_index_path: str = Field(default="data/processed/bm25_index")
-    output_search_path: str = Field(default="data/output/search_results")
-    output_answer_path: str = Field(
-        default="data/output/search_results_and_answer")
 
     max_chunk_size: int = Field(default=2000, ge=100, le=2000)
+
     llm: str = Field(default="Qwen/Qwen3-0.6B")
+    max_new_tokens: int = Field(default=256, ge=1)
+    max_context_sources: int = Field(default=5, ge=1)
+    max_context_tokens: int = Field(default=1200, ge=100)
+
+    @property
+    def bm25_index_path(self) -> str:
+        """Folder of the BM25 index, inside processed_path."""
+        return f"{self.processed_path}/bm25_index"
