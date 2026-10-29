@@ -9,15 +9,18 @@ This folder does two jobs, run by the `index` command:
 
 ```
 Pipeline.index()
-   │  finds every file, picks a chunker for each (by extension)
+   │  checks raw_path exists, finds every .py/.md/.txt file,
+   │  picks a chunker class for each (by extension)
    ▼
-Indexer.index(strats)
-   │  1. chunker.proccess(path, size)  → list[Chunk]   (for every file)
+Indexer.index(strats)                    → returns the number of chunks
+   │  1. chunker.proccess(path, size)  → list[Chunk]   (every file, tqdm bar)
    │  2. tokenize(texts)               → tokens
    │  3. BM25().index(tokens)          → word statistics
    │  4. save(dir, corpus=chunks)      → files on disk
    ▼
-data/processed/bm25_index/
+<processed_path>/bm25_index/             (data/processed/bm25_index by default)
+
+"Ingestion complete! 11015 chunks from 1969 files in 3.8s. Indices saved under data/processed/"
 ```
 
 ---
@@ -114,9 +117,12 @@ type:
   give you each `def`/`class` with its start and end line.
 
 ### _temporary:_
-- _Current state: both classes use the same **fixed-window** logic (a baseline).
-That's fine for a first end-to-end run; smarter strategies come after you
-have a recall number to beat._
+- _Current state: both classes use the same **fixed-window** logic (a
+baseline): windows of `chunking_size` characters, the last one ending at the
+end of the file. Verified on the whole corpus: 0 offset errors, 0 chunks over
+2000 characters, every file fully covered._
+- _Baseline recall@5 to beat: docs 85.0% / code 59.6% (public), docs 83.0% /
+code 52.0% (private). Code is the one close to the 50% line._
 
 ---
 
@@ -132,9 +138,22 @@ grader wants.
 **`path.suffix`** — the extension with the dot: `".py"`, `".md"`, `""` for
 `Makefile`. Case-sensitive (`.MD` ≠ `.md`).
 
-Choosing which extensions to index: check which ones appear in the
-`file_path`s of the AnsweredQuestions datasets. Indexing files that are never
-answers only adds noise and time.
+**`sorted(...)`** — `rglob` returns files in whatever order the filesystem
+gives; sorting makes the chunk order (and so the index) identical on every
+machine.
+
+**Which extensions** (`EXTENSIONS` in `pipeline.py`): the true sources of all
+the AnsweredQuestions datasets point to only three kinds of files:
+
+| Extension | Sources pointing to it |
+|---|---|
+| `.py` | 200 |
+| `.md` | 194 |
+| `.txt` | 5 |
+
+So exactly `.py`, `.md`, `.txt` are indexed (`.py` → `PyChunking`, the others
+→ `MdChunking`). Indexing files that are never answers only adds noise and
+time.
 
 ---
 
@@ -241,3 +260,19 @@ nested dicts. One line of `corpus.jsonl` looks like:
 
 After running `index`, check that `corpus.jsonl` has as many lines as you have
 chunks.
+
+---
+
+## 6. Errors and progress
+
+| Situation | What happens |
+|---|---|
+| `raw_path` is not a folder | `RAGError("corpus folder '...' not found")` → exit 1 |
+| one file can't be read (permissions, not UTF-8) | `Warning: skipping '...'` on stderr, indexing continues |
+| no chunk at all (empty folder) | `RAGError("nothing to index in '...'")` |
+| the index can't be saved (disk full, read-only) | `RAGError("cannot save the index to '...'")` |
+
+Progress bars (the subject asks for tqdm on long operations): `Chunking`
+(ours, one step per file) then bm25s's own bars (`Split strings`,
+`Stem Tokens`, `BM25S Count Tokens`, `BM25S Compute Scores`). They all go to
+stderr.
