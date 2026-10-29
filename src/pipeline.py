@@ -100,5 +100,9 @@ class Pipeline:
             save_directory, Path(student_search_results_path).name, answers)
         print(f"Saved student_search_results_and_answer to {out_file}")
 
-    def answer(self, query: str, k: int) -> None:
-        ...
+    def evaluate(self, student_search_results_path: str,
+                 dataset_path: str) -> dict[int, float]:
+        results = read_json(student_search_results_path, StudentSearchResults)
+        truth = read_json(dataset_path, RagDataset)
+        ks = [k for k in (1, 3, 5, 10) if k <= results.k] or [results.k]
+        return recall_at_k(results, truth, ks)

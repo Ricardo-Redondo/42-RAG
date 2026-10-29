@@ -76,11 +76,15 @@ class Cli:
         self.pipeline.answer_dataset(student_search_results_path,
                                      save_directory)
 
-    def evaluate(student_search_results_path: str,
+    def evaluate(self, student_search_results_path: str,
                  dataset_path: str) -> None:
         """
         Report your own recall@k against a ground-truth dataset,
         for your own testing.
         """
-        print("evaluate")
-        ...
+        recalls = self.pipeline.evaluate(student_search_results_path,
+                                         dataset_path)
+        print("Evaluation Results")
+        print("=" * 40)
+        print("  ".join(f"Recall@{k}: {value:.3f}"
+                        for k, value in recalls.items()))
